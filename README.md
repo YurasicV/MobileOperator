@@ -1,7 +1,5 @@
-# Project Title
+# Mobile Operator
 
-Mobile Operator
----------------
 REST API service
 
 ## Getting Started
@@ -121,11 +119,11 @@ This application allows to store information about clients of mobile operator.  
 
 ## Additional tools
 
-DB platform: postgres
-DB name: dbmobile
-Url: jdbc:postgresql://localhost:5432/dbmobile
-Username: postgres
-Password: postgres
+* DB platform: postgres
+* DB name: dbmobile
+* Url: jdbc:postgresql://localhost:5432/dbmobile
+* Username: postgres
+* Password: postgres
 
 ## Built With
 
