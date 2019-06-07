@@ -8,7 +8,7 @@ This application allows to store information about clients of mobile operator.  
 
 ### Endpoints
 
-1. Creating a client (GET)
+1. Creating a client (GET)   
    http://localhost:8080/api/client/
 
    ```
@@ -41,7 +41,7 @@ This application allows to store information about clients of mobile operator.  
    }
    ```
 
-2. Storing information about a client's call (POST)
+2. Storing information about a client's call (POST)   
    http://localhost:8080/api/call/
    ```
    RequestBody example:
@@ -72,7 +72,7 @@ This application allows to store information about clients of mobile operator.  
    }
    ``` 
 
-3. Providing information on a number of calls per each city (GET)
+3. Providing information on a number of calls per each city (GET)   
    http://localhost:8080/api/calls-per-cities/
    ```
    ResponceBody example:
@@ -88,7 +88,7 @@ This application allows to store information about clients of mobile operator.  
    ]
    ``` 
 
-4. Providing information about the longest call for defined client id and specified date range (POST)
+4. Providing information about the longest call for defined client id and specified date range (POST)   
    http://localhost:8080/api/the-longest-call/
    ```
    RequestBody example:
@@ -117,13 +117,13 @@ This application allows to store information about clients of mobile operator.  
    }
    ```
 
-## Additional tools
+## Additional DB tools
 
-* DB platform: postgres
-* DB name: dbmobile
-* Url: jdbc:postgresql://localhost:5432/dbmobile
-* Username: postgres
-* Password: postgres
+  DB platform: postgres   
+  DB name: dbmobile   
+  Url: jdbc:postgresql://localhost:5432/dbmobile   
+  Username: postgres   
+  Password: postgres   
 
 ## Built With
 
@@ -132,7 +132,7 @@ This application allows to store information about clients of mobile operator.  
 * [JUnit](https://junit.org/junit4/) - Used for testing
 
 
-## Authors
+## Author
 
 * **Yurii Vislobodskyi** - *Mobile Operator* - [MobileOperator](https://github.com/Yurasicv/)
 
