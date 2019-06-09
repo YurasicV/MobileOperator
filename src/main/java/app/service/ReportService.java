@@ -22,7 +22,7 @@ public class ReportService {
     }
 
     public Call findTheLongestCallByClientAndDataRange(ClientAndDateRange clientAndDateRange) {
-        return callRepository.findCallsByClientAndDataRange(clientAndDateRange, new PageRequest(0,1))
+        return callRepository.findCallsByClientAndDataRange(clientAndDateRange, PageRequest.of(0,1))
                 .stream().findFirst().orElse(null);
     }
 }
