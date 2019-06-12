@@ -3,6 +3,7 @@ package app.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Entity
@@ -20,6 +21,7 @@ public class PhoneNumber {
     private Client client;
 
     @Pattern(regexp="(^$|[0-9]{10})")
+    @NotBlank(message = "Phone is mandatory")
     private String phone;
 
     public PhoneNumber() {

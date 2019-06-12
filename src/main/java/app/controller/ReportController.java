@@ -4,10 +4,12 @@ import app.dto.CallsPerCity;
 import app.dto.ClientAndDateRange;
 import app.entity.Call;
 import app.service.ReportService;
+import app.validation.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,19 +22,19 @@ public class ReportController {
     }
 
     @GetMapping("/calls-per-cities/")
-    public ResponseEntity<List<CallsPerCity>> listCallsPerCities() {
+    public ResponseEntity<List<CallsPerCity>> listCallsPerCities() throws CustomException {
         List<CallsPerCity> callsPerCities = reportService.findCallsPerCities();
         if (callsPerCities.isEmpty()) {
-            return new ResponseEntity<>(callsPerCities, HttpStatus.NO_CONTENT);
+            throw new CustomException("No content", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(callsPerCities, HttpStatus.OK);
     }
 
     @PostMapping("/the-longest-call/")
-    public ResponseEntity<Call> getTheLongestCall(@RequestBody ClientAndDateRange clientAndDateRange) {
+    public ResponseEntity<Call> getTheLongestCall(@Valid @RequestBody ClientAndDateRange clientAndDateRange) throws CustomException {
         Call call = reportService.findTheLongestCallByClientAndDataRange(clientAndDateRange);
         if (call == null) {
-            return new ResponseEntity<>(new Call(), HttpStatus.NO_CONTENT);
+            throw new CustomException("No content", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(call, HttpStatus.OK);
     }
