@@ -1,67 +1,108 @@
 package app.controller;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import app.dto.CallsPerCity;
+import app.dto.ClientAndDateRange;
+import app.entity.Call;
+import app.service.ReportService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(ReportController.class)
 public class ReportControllerTest {
-    @LocalServerPort
-    int randomServerPort;
 
     @Autowired
-    private ReportController controller;
+    private MockMvc mvc;
+
+    @MockBean
+    private ReportService reportService;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Test
-    public void contextLoads() throws Exception {
-        assertThat(controller).isNotNull();
+    public void listCallsPerCitiesNotEmptyTest() throws Exception {
+
+        List<CallsPerCity> list = new ArrayList<>();
+        list.add(new CallsPerCity("Dnipro", 2L));
+        list.add(new CallsPerCity("Kyiv", 5L));
+
+        given(reportService.findCallsPerCities()).willReturn(list);
+
+        mvc.perform(get("/api//calls-per-cities/")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(hasSize(2))))
+                .andExpect(jsonPath("$[0].cityName", is("Dnipro")));
     }
 
     @Test
-    public void listCallsPerCities() throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
+    public void listCallsPerCitiesEmptyTest() throws Exception {
 
-        final String baseUrl = "http://localhost:" + randomServerPort + "/api/calls-per-cities/";
-        URI uri = new URI(baseUrl);
+        List<CallsPerCity> list = new ArrayList<>();
 
-        ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+        given(reportService.findCallsPerCities()).willReturn(list);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertTrue(result.getBody().contains("callsNumber"));
+        mvc.perform(get("/api//calls-per-cities/")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void getTheLongestCall() throws URISyntaxException, JSONException {
-        RestTemplate restTemplate = new RestTemplate();
+    public void getTheLongestCallNotEmptyTest() throws Exception {
 
-        final String baseUrl = "http://localhost:" + randomServerPort + "/api/the-longest-call/";
-        URI uri = new URI(baseUrl);
+        Call call = new Call();
+        call.setId(1L);
 
-        String request = "{\"clientId\": 1,\"dateFrom\": \"2019-06-04\",\"dateTo\": \"2019-06-07\"}";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<JSONObject> entity = new HttpEntity<>(new JSONObject(request), headers);
-        ResponseEntity<String> result = restTemplate.postForEntity(uri, entity, String.class);
+        ClientAndDateRange clientAndDateRange = new ClientAndDateRange();
+        clientAndDateRange.setClientId(1L);
+        clientAndDateRange.setDateFrom(new Date());
+        clientAndDateRange.setDateTo(new Date());
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertTrue(result.getBody().contains("id"));
+        given(reportService.findTheLongestCallByClientAndDataRange(ArgumentMatchers
+                .any(ClientAndDateRange.class))).willReturn(call);
+
+        mvc.perform(post("/api//the-longest-call/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(clientAndDateRange)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
+    }
+
+    @Test
+    public void getTheLongestCallEmptyTest() throws Exception {
+
+        ClientAndDateRange clientAndDateRange = new ClientAndDateRange();
+        clientAndDateRange.setClientId(1L);
+        clientAndDateRange.setDateFrom(new Date());
+        clientAndDateRange.setDateTo(new Date());
+
+        given(reportService.findTheLongestCallByClientAndDataRange(ArgumentMatchers
+                .any(ClientAndDateRange.class))).willReturn(null);
+
+        mvc.perform(post("/api//the-longest-call/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(clientAndDateRange)))
+                .andExpect(status().isNotFound());
     }
 }

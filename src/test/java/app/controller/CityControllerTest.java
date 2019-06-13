@@ -1,7 +1,7 @@
 package app.controller;
 
-import app.entity.Client;
-import app.service.ClientService;
+import app.entity.City;
+import app.service.CityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,48 +20,48 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(ClientController.class)
-public class ClientControllerTest {
+@WebMvcTest(CityController.class)
+public class CityControllerTest {
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private ClientService clientService;
+    private CityService cityService;
 
     @Autowired
     ObjectMapper objectMapper;
 
     @Test
-    public void createClient_whenClientExists_thenReturnJsonArray() throws Exception {
+    public void createCity_whenCityExists_thenReturnJsonArray() throws Exception {
 
-        Client ivanov = new Client();
-        ivanov.setId(1L);
-        ivanov.setFullName("Ivanov");
+        City dnipro = new City();
+        dnipro.setId(1L);
+        dnipro.setName("Dnipro");
 
-        given(clientService.exists(ArgumentMatchers.any(Client.class))).willReturn(false);
+        given(cityService.exists(ArgumentMatchers.any(City.class))).willReturn(false);
 
-        mvc.perform(post("/api/client/")
+        mvc.perform(post("/api/city/")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ivanov)))
+                .content(objectMapper.writeValueAsString(dnipro)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fullName", is(ivanov.getFullName())));
+                .andExpect(jsonPath("$.name", is(dnipro.getName())));
     }
 
     @Test
-    public void createClient_whenClientDoesnotExist_thenReturnErrorMessage() throws Exception {
+    public void createCity_whenCityDoesnotExist_thenReturnErrorMessage() throws Exception {
 
-        Client ivanov = new Client();
-        ivanov.setId(1L);
-        ivanov.setFullName("Ivanov");
+        City dnipro = new City();
+        dnipro.setId(1L);
+        dnipro.setName("Dnipro");
 
-        given(clientService.exists(ArgumentMatchers.any(Client.class))).willReturn(true);
+        given(cityService.exists(ArgumentMatchers.any(City.class))).willReturn(true);
 
-        mvc.perform(post("/api/client/")
+        mvc.perform(post("/api/city/")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ivanov)))
+                .content(objectMapper.writeValueAsString(dnipro)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message", is(String.format("Client %s already exists",
-                        ivanov.getFullName()))));
+                .andExpect(jsonPath("$.message", is(String.format("City %s already exists",
+                        dnipro.getName()))));
     }
 }
